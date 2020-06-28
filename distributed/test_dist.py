@@ -22,7 +22,7 @@ def train(rank, world_size):
     optimizer = optim.SGD(ddp_model.parameters(), lr=0.001)
 
     optimizer.zero_grad()
-    for i in range(1, 32 + 1):
+    for i in range(1, 24 + 1):
         print(f'epoch={i}, rank={rank}')
         # forward
         outputs = ddp_model(torch.randn(20, 10).to(device))
