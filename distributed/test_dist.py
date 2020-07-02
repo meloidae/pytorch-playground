@@ -12,8 +12,8 @@ def train(rank, world_size):
                             rank=rank,
                             world_size=world_size)
 
-    acc_steps = 2
-    eval_steps = 4
+    acc_steps = 4
+    eval_steps = 8
     device = torch.device('cuda', rank)
     model = nn.Linear(10, 10).to(device)
     ddp_model = DDP(model, device_ids=[rank])
@@ -22,7 +22,7 @@ def train(rank, world_size):
     optimizer = optim.SGD(ddp_model.parameters(), lr=0.001)
 
     optimizer.zero_grad()
-    for i in range(1, 8 + 1):
+    for i in range(1, 24 + 1):
         print(f'epoch={i}, rank={rank}')
         # forward
         outputs = ddp_model(torch.randn(20, 10).to(device))
@@ -32,12 +32,14 @@ def train(rank, world_size):
 
         # update with accumulation
         if i % acc_steps == 0:
+            print(f'epoch={i}, rank={rank}, step')
             optimizer.step()
             optimizer.zero_grad()
             # run evaluation (only forward)
             if rank == 0 and i % eval_steps == 0:
                 with torch.no_grad():
-                    outputs = ddp_model(torch.rand(20, 10).to(device))
+                    for _ in range(100000):  # Should take long time
+                        outputs = ddp_model(torch.rand(20, 10).to(device))
                     print(f'epoch={i}, rank={rank}, evaluation')
 
 
