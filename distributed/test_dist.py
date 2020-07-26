@@ -38,8 +38,8 @@ def train(rank, world_size):
             # run evaluation (only forward)
             if rank == 0 and i % eval_steps == 0:
                 with torch.no_grad():
-                    for _ in range(100000):  # Should take long time
-                        outputs = ddp_model(torch.rand(20, 10).to(device))
+                    for _ in range(10000):  # Should take long time
+                        outputs = model(torch.rand(20, 10).to(device))
                     print(f'epoch={i}, rank={rank}, evaluation')
 
 
